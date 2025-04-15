@@ -1,0 +1,104 @@
+R1  : 
+
+conf t
+interface g0/0
+ ipv6 address 2001:DB8:1:10::1/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+interface g0/1
+ ipv6 address 2001:DB8:1:11::1/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+interface s0/1/0
+ ipv6 address 2001:DB8:1:1::1/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+ipv6 unicast-routing
+ipv6 router ospf 1
+ router-id 1.1.1.1
+end
+
+
+R2 : 
+
+
+conf t
+interface s0/1/0
+ ipv6 address 2001:DB8:1:1::2/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+interface s0/1/1
+ ipv6 address 2001:DB8:1:2::2/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+ipv6 unicast-routing
+ipv6 router ospf 1
+ router-id 2.2.2.2
+end
+
+
+R3 : 
+
+conf t
+interface s0/1/0
+ ipv6 address 2001:DB8:1:2::1/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+interface g0/0
+ ipv6 address 2001:DB8:1:30::1/64
+ ipv6 ospf 1 area 0
+ no shutdown
+
+ipv6 unicast-routing
+ipv6 router ospf 1
+ router-id 3.3.3.3
+end
+
+
+
+. Configure ACL to Block HTTP/HTTPS on R1 
+
+R1 : 
+
+conf t
+ipv6 access-list BLOCK_HTTP
+ deny tcp any host 2001:DB8:1:30::30 eq www
+ deny tcp any host 2001:DB8:1:30::30 eq 443
+ permit ipv6 any any
+exit
+
+interface g0/1
+ ipv6 traffic-filter BLOCK_HTTP in
+
+
+
+R3 : 
+conf t
+ipv6 access-list BLOCK_ICMP
+ deny icmp any any
+ permit ipv6 any any
+exit
+
+interface g0/0
+ ipv6 traffic-filter BLOCK_ICMP out
+
+
+
+
+output  :
+
+Test from PC1:
+ping 2001:DB8:1:30::30 → ❌ Should fail (ICMP blocked)
+
+Access http://2001:DB8:1:30::30 → ✅ Should work
+
+Test from PC2:
+ping 2001:DB8:1:30::30 → ❌ Should fail
+
+Access http://2001:DB8:1:30::30 → ❌ Should fail (BLOCK_HTT

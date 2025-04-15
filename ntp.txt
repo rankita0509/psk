@@ -1,0 +1,50 @@
+Addressing Table 
+Device Interface IP Address Subnet Mask Default Gateway Switch Port 
+R1 
+G0/1 192.168.1.1 255.255.255.0 N/A S1 F0/5 
+S0/0/0 (DCE) 10.1.1.1 255.255.255.252 N/A N/A 
+R2 
+S0/0/0 10.1.1.2 255.255.255.252 N/A N/A 
+S0/0/1 (DCE) 10.2.2.2 255.255.255.252 N/A N/A 
+R3 
+G0/1 192.168.3.1 255.255.255.0 N/A S3 F0/5 
+S0/0/1 10.2.2.1 255.255.255.252 N/A N/A 
+PC-A NIC 192.168.1.5 255.255.255.0 192.168.1.1 S1 F0/6 
+PC-B NIC 192.168.1.6 255.255.255.0 192.168.1.1 S2 F0/18 
+PC-C NIC 192.168.3.5 255.255.255.0 192.168.3.1 S3 F0/18
+
+
+1) ospf 
+
+2)Configure NTP
+
+: Enable NTP authentication on PC-A.
+:To configure NTP authentication, click Enable under Authentication. Use key 1 and password NTPpa55
+for authentication.
+
+Step 2: Configure R1, R2, and R3 as NTP clients. 
+R1(config)# ntp server 192.168.1.5
+R2(config)# ntp server 192.168.1.5
+R3(config)# ntp server 192.168.1.5
+
+Verify client configuration using the command show ntp status
+
+Step 4: Configure NTP authentication on the routers. Configure NTP 
+authentication on R1, R2, and R3 using key 1 and password NTPpa55. 
+R1(config)# ntp authenticate 
+R1(config)# ntp trusted-key 1 
+R1(config)# ntp authentication-key 1 md5 NTPpa55 
+R2(config)# ntp authenticate
+R2(config)# ntp trusted-key 1
+R2(config)# ntp authentication-key 1 md5 NTPpa55
+R3(config)# ntp authenticate
+R3(config)# ntp trusted-key 1
+R3(config)# ntp authentication-key 1 md5 NTPpa55
+
+
+
+Step 5: Configure routers to timestamp log messages. 
+Configure timestamp service for logging on the routers. 
+R1(config)# service timestamps log datetime msec
+R2(config)# service timestamps log datetime msec
+R3(config)# service timestamps log datetime msec

@@ -1,0 +1,13 @@
+enable secret 1234
+line console 0
+password 1234
+login
+exit
+ip domain-name YouTube.com
+username rahul secret 1234
+line vty 0 4
+login local
+exit
+crypto key generate rsa
+1024
+

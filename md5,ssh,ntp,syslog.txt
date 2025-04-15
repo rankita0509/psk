@@ -1,0 +1,63 @@
+ R1 : 
+
+conf t
+interface s0/0/0
+ip ospf message-digest-key 1 md5 MD5pa55
+router ospf 1
+area 0 authentication message-digest
+service timestamps log datetime msec
+logging 192.168.1.6
+ntp server 192.168.1.5
+ntp update-calendar
+ntp authentication-key 1 md5 NTPpa55
+ntp authenticate
+ntp trusted-key
+
+
+R2 : 
+
+conf t
+interface s0/0/0
+ip ospf message-digest-key 1 md5 MD5pa55
+interface s0/0/1
+ip ospf message-digest-key 1 md5 MD5pa55
+router ospf 1
+area 0 authentication message-digest
+service timestamps log datetime msec
+logging 192.168.1.6
+ntp server 192.168.1.5
+ntp update-calendar
+ntp authentication-key 1 md5 NTPpa55
+ntp authenticate
+ntp trusted-key 1
+end
+
+
+R3 : 
+
+conf t
+interface s0/0/1
+ip ospf message-digest-key 1 md5 MD5pa55
+router ospf 1
+area 0 authentication message-digest
+service timestamps log datetime msec
+logging 192.168.1.6
+ntp server 192.168.1.5
+ntp update-calendar
+ntp authentication-key 1 md5 NTPpa55
+ntp authenticate
+ntp trusted-key 1
+ip domain-name ccnasecurity.com
+username SSHadmin privilege 15 secret ciscosshpa55
+line vty 0 4
+login local
+transport input ssh
+crypto key zeroize rsa
+crypto key generate rsa
+1024
+ip ssh time-out 90
+ip ssh authentication-retries 2
+ip ssh version 2
+end
+
+

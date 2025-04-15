@@ -1,0 +1,37 @@
+Addressing Table 
+Device Interface IP Address Subnet Mask Default Gateway Switch Port 
+R1 
+G0/1 192.168.1.1 255.255.255.0 N/A S1 F0/5 
+S0/0/0 (DCE) 10.1.1.1 255.255.255.252 N/A N/A 
+R2 
+S0/0/0 10.1.1.2 255.255.255.252 N/A N/A 
+S0/0/1 (DCE) 10.2.2.2 255.255.255.252 N/A N/A 
+R3 
+G0/1 192.168.3.1 255.255.255.0 N/A S3 F0/5 
+S0/0/1 10.2.2.1 255.255.255.252 N/A N/A 
+PC-A NIC 192.168.1.5 255.255.255.0 192.168.1.1 S1 F0/6 
+PC-B NIC 192.168.1.6 255.255.255.0 192.168.1.1 S2 F0/18 
+PC-C NIC 192.168.3.5 255.255.255.0 192.168.3.1 S3 F0/18
+
+
+1) OSPF 
+2)Configure OSPF MD5 Authentication
+	
+	R1 : router ospf 1
+	area 0 authentication message-digest 
+
+	(same for R2 and R3 )
+
+3) Step 3: Configure the MD5 key for all the routers in area 0
+
+	R1(config)# interface s0/0/0
+	R2(config-if)# ip ospf message-digest-key 1 md5 MD5pa55
+	R2(config)# interface s0/0/0
+	R2(config-if)# ip ospf message-digest-key 1 md5 MD5pa55
+	R2(config-if)# interface s0/0/1
+	R2(config-if)# ip ospf message-digest-key 1 md5 MD5pa55
+	R3(config)# interface s0/0/1
+	R3(config-if)# ip ospf message-digest-key 1 md5 MD5pa55
+
+4) Verify = show ip ospf interface (on each roputer ) and sent the pa kets also
+

@@ -1,0 +1,43 @@
+!!! Script for R1 - Part 1
+
+config t
+username Admin1 secret admin1pa55
+aaa new-model
+aaa authentication login default local
+line console 0
+login authentication default
+
+
+!!! Script for R1 - Part 2
+
+ip domain-name ccnasecurity.com
+crypto key generate rsa
+1024
+aaa authentication login SSH-LOGIN local
+line vty 0 4
+login authentication SSH-LOGIN
+transport input ssh
+
+
+!!! Script for R2
+
+conf t
+username Admin2 secret admin2pa55
+tacacs-server host 192.168.2.2
+tacacs-server key tacacspa55
+aaa new-model
+aaa authentication login default group tacacs+ local
+line console 0
+login authentication default
+
+
+!!! Script for R3
+
+conf t
+username Admin3 secret admin3pa55
+radius-server host 192.168.3.2
+radius-server key radiuspa55
+aaa new-model
+aaa authentication login default group radius local
+line console 0
+login authentication default
